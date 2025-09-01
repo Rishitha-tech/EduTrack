@@ -1,6 +1,10 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ["./pages/**/*.{js,jsx}", "./components/**/*.{js,jsx}"],
+  content: [
+    "./pages/**/*.{js,ts,jsx,tsx,mdx}",
+    "./components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./app/**/*.{js,ts,jsx,tsx,mdx}" // keep if you have /app; safe to leave in
+  ],
   theme: {
     extend: {
       colors: {
@@ -17,7 +21,7 @@ module.exports = {
         sans: ["Inter", "ui-sans-serif", "system-ui"],
       },
       borderRadius: {
-        xl2: "1.25rem",
+        xl2: "1.25rem", // custom size ok
       },
     },
   },
