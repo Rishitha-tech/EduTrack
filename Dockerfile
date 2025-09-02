@@ -1,0 +1,39 @@
+cd C:\Users\Admin\Desktop\edutrack
+
+@'
+# Build stage
+FROM node:20-bookworm-slim AS build
+WORKDIR /app
+
+# Copy only package files first (better caching)
+COPY package*.json ./
+
+# Install deps (include dev deps; needed to build Tailwind/Next)
+RUN npm ci
+
+# Copy the rest of the source
+COPY . .
+
+# Build Next.js
+ENV NEXT_TELEMETRY_DISABLED=1
+RUN npm run build
+
+# Remove dev deps for smaller runtime image
+RUN npm prune --omit=dev
+
+# Runtime stage
+FROM node:20-bookworm-slim AS runner
+WORKDIR /app
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+
+# Copy the built app and production deps
+COPY --from=build /app ./
+
+# Next reads PORT from env (Render sets it). We expose 3000 for local runs.
+EXPOSE 3000
+ENV PORT=3000
+
+# Start Next in production
+CMD ["npm","run","start","--","-p","3000"]
+'@ | Set-Content -Encoding UTF8 -NoNewline Dockerfile
